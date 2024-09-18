@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/milligram.css">
+</head>
+<body>
+<div id="loader" class="loading d-none">
+</div>
+
+
+<div class="container">
+    <div class="row">
+        <div class="column">
+            <label >Product ID</label>
+            <input id="ProductID" type="text">
+            <label>Product Name</label>
+            <input id="ProductName" type="text">
+            <label>Product Code</label>
+            <input id="ProductCode" type="text">
+            <label>Product Image</label>
+            <input id="ProductImg" type="text">
+            <label>Unit Price</label>
+            <input id="UnitPrice" type="text">
+            <label>Product Qty</label>
+            <input id="ProductQty" type="text">
+            <label>Product Total</label>
+            <input id="ProductTotal" type="text">
+            <button onclick="UpdateData()" type="submit">Submit</button>
+        </div>
+    </div>
+</div>
+<script src="js/axios.min.js"></script>
+<script>
+
+    fillExistingData();
+
+
+    async function fillExistingData() {
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+
+        let URL = `http://164.68.107.70:6060/api/v1/ReadProductByID/${id}`
+        document.getElementById('loader').classList.remove('d-none')
+        let res = await axios.get(URL);
+        document.getElementById('loader').classList.add('d-none')
+
+
+
+        if(res.status===200){
+            let items= res.data['data'][0]
+            document.getElementById('ProductID').value=items['_id'];
+            document.getElementById('ProductName').value=items['ProductName'];
+            document.getElementById('ProductCode').value=items['ProductCode'];
+            document.getElementById('ProductImg').value=items['Img'];
+            document.getElementById('UnitPrice').value=items['UnitPrice'];
+            document.getElementById('ProductQty').value=items['Qty'];
+            document.getElementById('ProductTotal').value=items['TotalPrice'];
+        }
+    }
+
+
+
+
+
+
+    async function UpdateData(){
+
+        let ProductID=document.getElementById('ProductID').value;
+        let ProductName=document.getElementById('ProductName').value;
+        let ProductCode=document.getElementById('ProductCode').value;
+        let ProductImg=document.getElementById('ProductImg').value;
+        let UnitPrice=document.getElementById('UnitPrice').value;
+        let ProductQty=document.getElementById('ProductQty').value;
+        let ProductTotal= document.getElementById('ProductTotal').value;
+
+        let URL = `http://164.68.107.70:6060/api/v1/UpdateProduct/${ProductID}`
+
+        document.getElementById('loader').classList.remove('d-none')
+
+        let res = await axios.post(URL,
+            {
+                Img:ProductImg,
+                ProductCode:ProductCode,
+                ProductName:ProductName,
+                Qty:ProductQty,
+                TotalPrice:ProductTotal,
+                UnitPrice:UnitPrice
+            }
+        );
+
+        document.getElementById('loader').classList.add('d-none')
+
+        if(res.status===200){
+            window.location="index.html"
+        }
+        else {
+            alert("error")
+        }
+    }
+</script>
+</body>
+</html>
